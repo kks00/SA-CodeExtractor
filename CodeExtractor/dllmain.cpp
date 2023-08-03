@@ -19,6 +19,7 @@ fGetParam* f_GetParam;
 fGetItemName* f_GetItemName;
 
 /*
+41 8B D5 48 8B 0D ???? ?? ?? E8 ?? ?? ?? ?? 4C 8B F8 48 85 C0
 cshell.dll+494EC1 - E8 DA8BCEFF           - call cshell.dll+17DAA0
 cshell.dll+494EC6 - 84 C0                 - test al,al
 cshell.dll+494EC8 - 0F85 EF050000         - jne cshell.dll+4954BD
@@ -37,7 +38,8 @@ cshell.dll+494EFC - 0F85 BE020000         - jne cshell.dll+4951C0
 */
 
 DWORD GetWeaponItemIndex(DWORD Code) {
-    INT64 Param = *(INT64*)(cshell_base + 0x15C9C50);
+    INT64 Param = *(INT64*)(cshell_base + 0x15F70B0);
+    f_GetWeaponItemIndex = (fGetItemIndex*)(cshell_base + 0x9E7040);
     INT64 ItemInfoBase = f_GetWeaponItemIndex(Param, Code);
     if (ItemInfoBase)
         return *(DWORD*)(ItemInfoBase + 0xFD8);
@@ -45,6 +47,7 @@ DWORD GetWeaponItemIndex(DWORD Code) {
 }
 
 /*
+ 48 8B 0D ?? ?? ?? ?? 8B D7 48 8B D8 E8 ?? ?? ?? ?? 45 33 C0
 cshell.dll+D94FA4 - E8 578CF2FF           - call cshell.dll+CBDC00
 cshell.dll+D94FA9 - 48 8B 0D A8108400     - mov rcx,[cshell.dll+15D6058] { (7FF9F1356500) } <<
 cshell.dll+D94FB0 - 8B D7                 - mov edx,edi
@@ -74,11 +77,13 @@ cshell.dll+D95009 - 48 89 44 24 20        - mov [rsp+20],rax
 */
 
 DWORD GetCharItemIndex(DWORD Code) {
-    INT64 Param = *(INT64*)(cshell_base + 0x15D6058);
+    INT64 Param = *(INT64*)(cshell_base + 0x16034E8);
+    f_GetCharItemIndex = (fGetItemIndex*)(cshell_base + 0xAC3320);
     return f_GetCharItemIndex(Param, Code);
 }
 
 /*
+ E8 ?? ?? ?? ?? 41 8B 8F ?? ?? ?? ?? 89 4C 24 20 45 8B 0F 45 33 C0
 cshell.dll+495294 - 48 81 FA 00100000     - cmp rdx,00001000 { 4096 }
 cshell.dll+49529B - 72 1C                 - jb cshell.dll+4952B9
 cshell.dll+49529D - 48 83 C2 27           - add rdx,27 { 39 }
@@ -117,10 +122,8 @@ void _main() {
         cshell_base = (INT64)GetModuleHandleA("cshell.dll");
     }
 
-    f_GetWeaponItemIndex = (fGetItemIndex*)(cshell_base + 0x9C6C60);
-    f_GetCharItemIndex = (fGetItemIndex*)(cshell_base + 0xAA2B70);
-    f_GetParam = (fGetParam*)(cshell_base + 0xCBDC00);
-    f_GetItemName = (fGetItemName*)(cshell_base + 0xCBDFB0);
+    f_GetParam = (fGetParam*)(cshell_base + 0xCDE580);
+    f_GetItemName = (fGetItemName*)(cshell_base + 0xCDE930);
 
     FILE* fWeapon = fopen(WEAPON_FILE_NAME, "w");
     FILE* fChar = fopen(CHAR_FILE_NAME, "w");
